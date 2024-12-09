@@ -1,0 +1,367 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery CDN -->
+
+    <style>
+        body {
+            background-color: #faf5ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: #f3e5f5;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            cursor: pointer;
+            transform: translateY(-50%);
+        }
+
+        #loading-spinner {
+            display: none;
+            text-align: center;
+        }
+
+        #form-verificacion-2fa {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #mensaje-error, #mensaje-verificacion {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .btn-recovery {
+            background-color: #6c3483;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+            .btn-recovery:hover {
+                background-color: #ce0909;
+            }
+
+        .btn-reg {
+            background-color: #3955fb;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 class="text-center mb-4">Iniciar Sesión</h2>
+        <p class="text-center">Ingrese sus datos, si no está registrado presione el botón "Registrar"</p>
+
+        <!-- Formulario de inicio de sesión -->
+        <form id="form-inicio-sesion">
+            <div class="form-group mb-3">
+                <label for="Usuario">Usuario</label>
+                <input type="text" name="Usuario" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="Contrasena">Contraseña</label>
+                <div class="password-container">
+                    <input type="password" name="Contrasena" id="Contrasena" class="form-control" required />
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="usuarioId">Identificacion</label>
+                <div class="form-group mb-3">
+                    <input type="text" id="usuarioId" class="form-control mt-2" required>
+                </div>
+            </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success" onclick="iniciarSesion()">Ingresar</button>
+
+                    <button onclick="location.href='/Home/Registrador'" type="button" class="btn btn-reg w-100">Registrarme</button>
+                </div>
+
+                <!-- Botón para recuperar contraseña -->
+                <button type="button" id="btn-olvide-contrasena" class="btn-recovery" onclick="mostrarRecuperacion()">Olvidé mi contraseña</button>
+        </form>
+        <!-- Contenedor para la recuperación de contraseña -->
+        <div id="recuperacion-contrasena" style="display: none; margin-top: 20px;">
+            <form id="form-recuperacion" class="p-4 border rounded shadow-sm" style="background-color: #f9f9f9;">
+                <h4 class="mb-3 text-center">Recuperar Contraseña</h4>
+                <div id="preguntas-seguridad" class="mb-3"></div>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary btn-recovery" onclick="verificarRespuestas()">Verificar</button>
+                    <button type="button" class="btn btn-secondary btn-recovery cancel" onclick="cancelarRecuperacion()">Cancelar</button>
+                </div>
+                <span id="mensaje-verificacion" class="text-danger mt-3 d-block"></span>
+            </form>
+        </div>
+
+
+        <!-- Spinner de carga -->
+        <div id="loading-spinner">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+
+        <!-- Formulario de verificación 2FA -->
+        <div id="form-verificacion-2fa">
+            <h2 class="mb-4">Verificación de Código</h2>
+            <p>Ingrese el código que se ha enviado a su correo electrónico.</p>
+            <div class="form-group mb-3">
+                <label for="codigoIngresado" class="form-label">Código de Verificación:</label>
+                <input type="text" id="codigoIngresado" class="form-control" required />
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="verificarCodigo()">Verificar</button>
+            <button type="button" class="btn btn-secondary w-100 mt-2" onclick="cancelarVerificacion()">Cancelar</button>
+        </div>
+
+        <!-- Mensajes de error -->
+        <span id="mensaje-error"></span>
+        <span id="mensaje-verificacion"></span>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById("Contrasena");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
+        function mostrarRecuperacion() {
+            const usuarioId = $("#usuarioId").val();
+            if (!usuarioId) {
+                alert("Por favor, ingrese su ID de usuario.");
+                return;
+            }
+            document.getElementById("recuperacion-contrasena").style.display = "block";
+
+            $.ajax({
+                url: 'http://localhost:5000/usuario/obtener-preguntas', // Ruta actualizada
+                type: 'POST',
+                contentType: 'application/json', // Especificar el tipo de contenido
+                data: JSON.stringify({ usuarioId: usuarioId }), // Enviar datos como JSON
+                success: function (response) {
+                    const preguntas = response.preguntas;
+                    document.getElementById("preguntas-seguridad").innerHTML = `
+                <label>${preguntas[0]}</label>
+                <input type="text" id="respuesta1" placeholder="Respuesta" class="form-control" required>
+                <label>${preguntas[1]}</label>
+                <input type="text" id="respuesta2" placeholder="Respuesta" class="form-control" required>
+            `;
+                },
+                error: function () {
+                    document.getElementById("mensaje-verificacion").innerText = "Error al obtener las preguntas de seguridad.";
+                }
+            });
+        }
+
+        function verificarRespuestas() {
+            const respuesta1 = document.getElementById("respuesta1").value;
+            const respuesta2 = document.getElementById("respuesta2").value;
+            const usuarioId = $("#usuarioId").val();
+
+            $.ajax({
+                url: 'http://localhost:5000/usuario/verificar-respuestas', // Ruta actualizada
+                type: 'POST',
+                contentType: 'application/json', // Especificar el tipo de contenido
+                data: JSON.stringify({
+                    usuarioId: usuarioId,
+                    respuesta1: respuesta1,
+                    respuesta2: respuesta2
+                }),
+                success: function (response) {
+                    if (response.verificado) {
+                        document.getElementById("mensaje-verificacion").innerText = "Verificación exitosa. Puedes cambiar tu contraseña.";
+                        mostrarCambioContrasena();
+                    } else {
+                        document.getElementById("mensaje-verificacion").innerText = "Las respuestas no son correctas.";
+                    }
+                },
+                error: function () {
+                    document.getElementById("mensaje-verificacion").innerText = "Error al verificar las respuestas.";
+                }
+            });
+        }
+
+        function mostrarCambioContrasena() {
+            document.getElementById("form-recuperacion").innerHTML = `
+        <label>Nueva Contraseña</label>
+        <input type="password" id="nueva-contrasena" class="form-control" required>
+        <button type="button" class="btn-recovery" onclick="cambiarContrasena()">Cambiar Contraseña</button>
+         <button type="button" class="btn btn-secondary btn-recovery cancel" onclick="cancelarRecuperacion()">Cancelar</button>
+        <span id="mensaje-cambio"></span>
+    `;
+        }
+
+        function cambiarContrasena() {
+            const nuevaContrasena = document.getElementById("nueva-contrasena").value;
+            const mensajeValidacion = validarContrasena(nuevaContrasena);
+
+            if (mensajeValidacion) {
+                document.getElementById("mensaje-cambio").innerText = mensajeValidacion;
+                return; // Detener el envío si la contraseña no cumple con los requisitos
+            }
+
+            const usuarioId = $("#usuarioId").val();
+
+            $.ajax({
+                url: '/Home/CambiarContrasena',
+                type: 'POST',
+                data: {
+                    usuarioId: usuarioId,
+                    nuevaContrasena: nuevaContrasena
+                },
+                success: function (response) {
+                    if (response.actualizado) {
+                        document.getElementById("mensaje-cambio").innerText = "Contraseña cambiada exitosamente.";
+                    } else {
+                        document.getElementById("mensaje-cambio").innerText = "Error al cambiar la contraseña.";
+                    }
+                },
+                error: function () {
+                    document.getElementById("mensaje-cambio").innerText = "Error en la solicitud de cambio de contraseña.";
+                }
+            });
+        }
+
+        function cancelarRecuperacion() {
+            // Oculta el formulario de recuperación de contraseña
+            document.getElementById("recuperacion-contrasena").style.display = "none";
+
+            // Muestra el formulario de inicio de sesión
+            document.getElementById("form-inicio-sesion").style.display = "block";
+
+            // Limpia los campos y mensajes del formulario de recuperación
+            document.getElementById("preguntas-seguridad").innerHTML = '';
+            document.getElementById("mensaje-verificacion").innerText = '';
+            document.getElementById("usuarioId").value = '';
+        }
+
+        function validarContrasena(contrasena) {
+            const minLength = 8;
+            const maxLength = 15;
+            const hasUppercase = /[A-Z]/.test(contrasena);
+            const hasLowercase = /[a-z]/.test(contrasena);
+            const hasNumber = /\d/.test(contrasena);
+            const hasSpecialChar = /[\W_]/.test(contrasena);
+
+            if (contrasena.length < minLength || contrasena.length > maxLength) {
+                return "La contraseña debe tener entre 8 y 15 caracteres.";
+            }
+            if (!hasUppercase) {
+                return "La contraseña debe incluir al menos una letra mayúscula.";
+            }
+            if (!hasLowercase) {
+                return "La contraseña debe incluir al menos una letra minúscula.";
+            }
+            if (!hasNumber) {
+                return "La contraseña debe incluir al menos un número.";
+            }
+            if (!hasSpecialChar) {
+                return "La contraseña debe incluir al menos un carácter especial.";
+            }
+
+            return ""; // Contraseña válida
+        }
+
+
+        function iniciarSesion() {
+            const usuario = $('input[name="Usuario"]').val();
+            const contrasena = $('input[name="Contrasena"]').val();
+            $("#loading-spinner").show();
+            $.ajax({
+                url: 'http://localhost:5000/usuario/inicio-sesion',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ usuario, contrasena }),
+                success: function (response) {
+                    if (response.success) {
+                        // Oculta el formulario de inicio de sesión
+                        $('#form-inicio-sesion').hide();
+                       
+
+                        // Muestra el formulario para ingresar el código de verificación
+
+                        $('#form-verificacion-2fa').show();
+                    }
+                },
+                error: function (xhr) {
+                    $('#mensaje-error').text(xhr.responseJSON?.message || "Error al intentar iniciar sesión.");
+                }
+            });
+        }
+
+
+
+
+        function verificarCodigo() {
+            const usuario = $('input[name="Usuario"]').val();
+            const codigoIngresado = $('#codigoIngresado').val();
+
+            if (!codigoIngresado) {
+                $('#mensaje-verificacion').text("Por favor, ingrese un código.");
+                return;
+            }
+
+            $.ajax({
+                url: 'http://localhost:5000/usuario/verificar-codigo',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ usuario, codigoIngresado }),
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = "/Home/Index"; // Redirige al índice después de verificar el código
+                    } else {
+                        $('#mensaje-verificacion').text(response.message);
+                    }
+                },
+                error: function (xhr) {
+                    $('#mensaje-verificacion').text(xhr.responseJSON?.message || "Error al verificar el código.");
+                }
+            });
+        }
+
+
+
+
+        function cancelarVerificacion() {
+            document.getElementById("form-verificacion-2fa").style.display = "none";
+            document.getElementById("form-inicio-sesion").style.display = "block";
+            document.getElementById("mensaje-error").innerText = "";
+            document.getElementById("mensaje-verificacion").innerText = "";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+﻿@model List<DulceEncanto.Models.Comentario>
+@{
+    ViewData["Title"] = "Opiniones de nuestros clientes";
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas de Clientes</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #faf5ff;
+        }
+
+        .comment-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+        }
+
+        .btn-cancelar {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+
+            .btn-cancelar:hover {
+                background-color: darkred;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Reseñas de Clientes</h2>
+
+        <!-- Comentarios Anteriores -->
+        @foreach (var comentario in Model)
+        {
+            <div class="comment-card">
+                <h5>@comentario.Titulo</h5>
+                <p>@comentario.ComentarioTexto</p>
+            </div>
+        }
+
+        <!-- Formulario para Agregar un Nuevo Comentario -->
+        <div class="card p-4">
+            <h4>Ingrese una opinión sobre nosotros:</h4>
+            <form method="post" action="/Home/GuardarComentario">
+                <input type="text" class="form-control" name="Titulo" placeholder="Título del comentario" required>
+                <textarea class="form-control" name="ComentarioTexto" rows="4" placeholder="Contenido del comentario" required></textarea>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <button type="button" class="btn btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y Popper.js -->
+    @Html.Raw("<script src='https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js'></script>")
+    @Html.Raw("<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js'></script>")
+
+</body>
+</html>

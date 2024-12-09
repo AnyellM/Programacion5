@@ -1,0 +1,161 @@
+﻿@model List<ProductoProveedor>
+@{
+
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+<h2 class="text-center">Inventario de Productos de Proveedores</h2>
+
+<div class="productos-proveedores-container">
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success text-center">
+            @ViewBag.Message
+        </div>
+    }
+
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">
+            @ViewBag.Error
+        </div>
+    }
+    else if (Model.Count == 0)
+    {
+        <p class="text-center">No hay productos disponibles en este momento.</p>
+    }
+    else
+    {
+        <div class="productos-grid">
+            @foreach (var producto in Model)
+            {
+
+                <div class="producto-card">
+                    <div class="producto-header">
+                        <h3>@producto.NombreProducto</h3>
+                        <p class="proveedor">Proveedor: @producto.NombreProveedor</p>
+                    </div>
+                    <div class="producto-body">
+                        <p class="precio">₡@producto.PrecioCompra</p>
+                        <p class="cantidad">Cantidad disponible: @producto.CantidadDisponible</p>
+          
+
+                           
+
+
+                        
+                       
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    /* Fondo general */
+    body {
+        background-color: #faf5ff;
+        font-family: 'Comfortaa', sans-serif;
+    }
+
+    /* Contenedor principal */
+    .productos-proveedores-container {
+        margin: 20px auto;
+        padding: 10px;
+        max-width: 1200px;
+    }
+
+    h2 {
+        color: #6C63FF;
+        margin-bottom: 20px;
+    }
+
+    /* Grid de productos */
+    .productos-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    /* Tarjeta del producto */
+    .producto-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        width: 300px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Estilo del encabezado */
+    .producto-header h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin: 0 0 10px;
+    }
+
+    .producto-header .proveedor {
+        font-size: 0.9rem;
+        color: #6C757D;
+        margin: 0;
+    }
+
+    /* Cuerpo de la tarjeta */
+    .producto-body .precio {
+        font-size: 1.2rem;
+        color: #28A745;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .producto-body .cantidad {
+        font-size: 0.95rem;
+        color: #6C757D;
+        margin: 0;
+    }
+
+    /* Estilo del formulario */
+    .compra-form {
+        margin-top: 15px;
+    }
+
+        .compra-form label {
+            display: block;
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .compra-form input[type="number"] {
+            width: 60%;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .compra-form button {
+            width: 80%;
+            padding: 10px;
+            background-color: #28A745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .compra-form button:hover {
+                background-color: #218838;
+            }
+</style>

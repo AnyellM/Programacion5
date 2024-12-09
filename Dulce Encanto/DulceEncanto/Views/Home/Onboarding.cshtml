@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Onboarding - Dulce Encanto";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5eefc, #e6d4f1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .carousel-inner {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 30px 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #5d3a84;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #7d6c99;
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 200px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+        }
+
+        .btn-omitir {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(93, 58, 132, 0.8);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+            .btn-omitir:hover {
+                background-color: #5d3a84;
+                transform: scale(1.05);
+            }
+    </style>
+</head>
+<body>
+    <!-- Botón Omitir -->
+    <form method="post" action="/Home/CompleteOnboarding">
+        <button type="submit" class="btn-omitir">Omitir</button>
+    </form>
+
+    <div class="container text-center">
+        <div id="onboardingSlides" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <img src="@Url.Content("~/Content/logo.gif")" alt="Cupcake">
+                    <h2>¡Bienvenido a Dulce Encanto!</h2>
+                    <p>Descubre la magia de nuestros productos dulces.</p>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                    <div>
+                        <h2>Productos Destacados</h2>
+                        <div class="d-flex justify-content-around">
+                            <div class="producto-card">
+                                <img src="@Url.Content("~/Content/imagenes/tleches.jpg")" alt="Tres Leches">
+                                <h3>Pastel de Tres Leches</h3>
+                            </div>
+                            <div class="producto-card">
+
+                                <img src="@Url.Content("~/Content/imagenes/brownie.jpg")" alt="Brownies">
+                                <h3>Brownies</h3>
+                            </div>
+                            <div class="producto-card">
+                                <img src="@Url.Content("~/Content/imagenes/tchilena.jpg")" alt="Torta Chilena">
+                                <h3>Torta Chilena</h3>
+                            </div>
+                        </div>
+                        <a href="FormInSe" class="btn btn-primary mt-4">Comprar</a>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                    <img src="@Url.Content("~/Content/imagenes/smartphone.jpg")" alt="Smart">
+                    <h2>Haz tu pedido</h2>
+                    <p>Desde la comodidad de tu hogar.</p>
+                    <div class="mt-4">
+                        <a href="FormInSe" class="btn btn-primary">Inicia Sesión</a>
+                        <a href="Registrador" class="btn btn-secondary">Regístrate</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Controles de navegación (flechas) -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#onboardingSlides" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#onboardingSlides" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+﻿@model DulceEncanto.Models.Producto
+@using DulceEncanto.Models
+@{
+    ViewData["Title"] = "Gestiona tus productos";
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<style>
+
+.formulario-producto,
+.tabla-productos {
+    width: 100%;
+}
+/* Asegúrate de que la tabla se adapte bien en todos los dispositivos */
+.table-responsive {
+    overflow-x: hidden; /* Evitar la barra de desplazamiento horizontal */
+}
+
+table {
+    width: 100%;
+    table-layout: auto; /* Deja que las columnas se ajusten automáticamente */
+}
+
+td, th {
+    word-wrap: break-word; /* Permite que el texto largo se ajuste dentro de las celdas */
+    text-align: left; /* Alinea el texto a la izquierda */
+    vertical-align: middle; /* Centrar verticalmente el contenido */
+}
+
+/* Estilo para pantallas pequeñas */
+
+@@media (max-width: 768px) {
+    /* Cada fila se verá como un bloque en pantallas pequeñas */
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block; /* Hace que todo se muestre en bloques */
+        width: 100%;
+    }
+
+    /* Esconde el encabezado de la tabla */
+    thead {
+        display: none;
+    }
+
+    /* Cada celda ahora se muestra como una fila */
+    tr {
+        margin-bottom: 15px; /* Añade espacio entre las "filas" en modo móvil */
+    }
+
+    /* Agrega títulos antes de cada celda para simular el encabezado */
+    td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    /* Asegura que los botones de acción estén alineados verticalmente */
+    .acciones a {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+
+</style>
+
+<div class="container mt-5">
+    @if (TempData["MensajeCrear"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeCrear"]
+        </div>
+    }
+    @if (TempData["MensajeActualizar"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeActualizar"]
+        </div>
+    }
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Gestión de Productos</h2>
+
+        <div class="row">
+            <!-- Formulario para Crear/Editar Producto -->
+            <div class="col-md-6 mb-4 formulario-producto">
+                <div class="card p-4 shadow-lg" style="background-color: #e8d5f7; border-radius: 12px;">
+                    <h4>@(Model.IdProducto == 0 ? "Crear Producto" : "Editar Producto")</h4>
+                    @using (Html.BeginForm("GuardarProducto", "Home", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(m => m.IdProducto)
+
+                        <div class="form-group mb-3">
+                            <label>Nombre:</label>
+                            @Html.TextBoxFor(m => m.NombreProducto, new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Precio Unitario:</label>
+                            @Html.TextBoxFor(m => m.PrecioProducto, new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Precio Completo:</label>
+                            @Html.TextBoxFor(m => m.PrecioCompleto, new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Descripción:</label>
+                            @Html.TextAreaFor(m => m.DescripcionProducto, new { @class = "form-control", rows = 3 })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Stock:</label>
+                            @Html.TextBoxFor(m => m.CantidadStock, new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Imagen (URL):</label>
+                            @Html.TextBoxFor(m => m.ImagenProducto, new { @class = "form-control" })
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            @(Model.IdProducto == 0 ? "Crear" : "Guardar Cambios")
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <!-- Listado de Productos -->
+            <div class="table-responsive">
+                <table class="table table-hover shadow-lg">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio Unitario</th>
+                            <th>Precio Completo</th>
+                            <th>Descripción Producto</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var producto in ViewBag.Productos as List<Producto>)
+                        {
+                            <tr>
+                                <td data-label="Nombre">@producto.NombreProducto</td>
+                                <td data-label="Precio Unitario">₡@producto.PrecioProducto</td>
+                                <td data-label="Precio Completo">₡@producto.PrecioCompleto</td>
+                                <td data-label="Descripción Producto">@producto.DescripcionProducto</td>
+                                <td data-label="Stock">@producto.CantidadStock</td>
+                                <td data-label="Acciones" class="acciones">
+                                    <a href="@Url.Action("GestionProductos", "Home", new { id = producto.IdProducto })"
+                                       class="btn btn-primary btn-sm mb-2">Editar</a>
+                                    <a href="@Url.Action("EliminarProducto", "Home", new { id = producto.IdProducto })"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

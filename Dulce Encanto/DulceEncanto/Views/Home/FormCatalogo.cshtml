@@ -1,0 +1,159 @@
+﻿@model IEnumerable<DulceEncanto.Models.Producto>
+
+@{
+    ViewData["Title"] = "Catálogo de Productos";
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<!-- Imagen de carrito en la esquina superior derecha -->
+<div class="cart-icon-container">
+    <a href="/Home/Carrito">
+        <img src="~/Content/imagenes/carri.png" alt="Carrito" class="cart-icon" />
+    </a>
+</div>
+
+<h2>Productos</h2>
+<p>Aquí puede ver y comprar nuestros productos</p>
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+        background-color: #faf5ff;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    h2, h5, p, button {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Icono de carrito */
+    .cart-icon-container {
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .cart-icon {
+        width: 60px; /* Cambia este valor para hacerlo más grande */
+        height: 50px; /* Cambia este valor para hacerlo más grande */
+        cursor: pointer;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 20px;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: white;
+        text-align: center;
+    }
+
+        .product-card img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+    .btn-comprar {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+        .btn-comprar:hover {
+            background-color: #45a049;
+        }
+
+    .btn-toggle {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: black;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+        .btn-toggle .arrow {
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+    .description {
+        display: none;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+        .description.show {
+            display: block;
+        }
+</style>
+
+<div class="container">
+    @if (TempData["MensajeCarrito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeCarrito"]
+        </div>
+    }
+</div>
+
+<div class="product-grid">
+    @foreach (var producto in Model)
+
+    {
+        <div class="product-card">
+            <h5><strong>@producto.NombreProducto</strong></h5>
+            <img src="~/Content/imagenes/@producto.ImagenProducto" alt="@producto.NombreProducto" />
+
+            <button class="btn-toggle" onclick="toggleDescription('descripcion-@producto.IdProducto')">
+                <span class="arrow">▼</span> Ver descripción
+            </button>
+
+            <div class="description collapse" id="descripcion-@producto.IdProducto">
+                <p class="product-description">@producto.DescripcionProducto</p>
+            </div>
+
+            <p><strong>Precio unidad:</strong> ₡@producto.PrecioProducto</p>
+            <p><strong>Disponibles:</strong> @producto.CantidadStock unidades</p>
+
+            <form method="post" action="/Home/AgregarAlCarrito">
+                <input type="hidden" name="idProducto" value="@producto.IdProducto" />
+                <div class="input-group mb-3">
+                    <input type="number" name="cantidad" class="form-control" min="1" max="@producto.CantidadStock" value="0" required />
+                </div>
+                <button type="submit" class="btn btn-comprar">Agregar al Carrito</button>
+            </form>
+        </div>
+    }
+    
+</div>
+
+<script>
+    function toggleDescription(id) {
+        const description = document.getElementById(id);
+        const arrow = description.previousElementSibling.querySelector('.arrow');
+
+        description.classList.toggle('show');
+
+        if (description.classList.contains('show')) {
+            arrow.style.transform = 'rotate(180deg)';
+        } else {
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+</script>

@@ -1,0 +1,84 @@
+﻿@model List<DulceEncanto.Models.Charla>
+@{
+
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<div class="charlas-container">
+    <h2>Charlas y Cursos</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+    else if (Model.Count == 0)
+    {
+        <p>No hay charlas disponibles en este momento.</p>
+    }
+    else
+    {
+        <div class="charlas-grid">
+            @foreach (var charla in Model)
+            {
+                <div class="charla-card">
+                    <img src="~/Content/imagenes/charla.png" alt="charla" class="charla-img" />
+                    <h3>@charla.Titulo</h3>
+                    <p>@charla.Descripcion</p>
+                    <p><strong>Fecha:</strong> @charla.Fecha.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Hora:</strong> @charla.Hora</p>
+                    <p><strong>Inscribete al:</strong> 8888-8888</p>
+                    @if (!string.IsNullOrEmpty(charla.Lugar))
+                    {
+                        <p><strong>Lugar:</strong> @charla.Lugar</p>
+                    }
+                    @if (!string.IsNullOrEmpty(charla.Enlace))
+                    {
+                        <p><a href="@charla.Enlace" target="_blank">Enlace a la charla</a></p>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .charlas-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #faf5ff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .charlas-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .charla-card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .charla-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+    .charla-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+</style>

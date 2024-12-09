@@ -1,0 +1,458 @@
+﻿@{
+    ViewData["Title"] = "Registro de Usuario";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* Contenedor para cada sección de verificación */
+    .verification-container {
+        background-color: #f7e6ff; /* Fondo lila claro */
+        border: 1px solid #d6b3f2;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+        max-width: 400px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        /* Estilo para los inputs */
+        .verification-container input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #d6b3f2;
+            background-color: #ffffff;
+            color: #4a235a;
+            font-size: 14px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+    /* Estilo para el botón de verificación */
+    .verification-button {
+        background-color: #a569bd;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+        .verification-button:hover {
+            background-color: #8e44ad;
+        }
+
+    /* Estilo para el mensaje de verificación */
+    .verification-message {
+        margin-top: 5px;
+        font-size: 13px;
+        color: #4a235a;
+    }
+
+    /* Contenedor de cada pregunta y respuesta */
+    .security-question-container {
+        background-color: #e5d4e8; /* Fondo suave para cada sección */
+        border: 1px solid #d6b3f2;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+        max-width: 400px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        /* Estilo para la etiqueta de pregunta */
+        .security-question-container label {
+            display: block;
+            font-weight: bold;
+            color: #4a235a;
+            margin-bottom: 5px;
+        }
+
+    /* Estilo para el dropdown de selección de pregunta */
+    .security-question {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #d6b3f2;
+        background-color: #ffffff;
+        color: #4a235a;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    /* Estilo para el campo de respuesta */
+    .security-answer {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #d6b3f2;
+        background-color: #ffffff;
+        color: #4a235a;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+        /* Cambios visuales al enfocar en los campos */
+        .security-question:focus,
+        .security-answer:focus {
+            border-color: #a569bd;
+            outline: none;
+            box-shadow: 0 0 5px rgba(165, 105, 189, 0.5);
+        }
+
+    body {
+        background-color: #faf5ff;
+    }
+
+    .card {
+        background-color: #f3e5f5;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 400px;
+        margin: 50px auto;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        cursor: pointer;
+        transform: translateY(-50%);
+    }
+
+    .password-requirements {
+        list-style: none;
+        padding: 0;
+        font-size: 0.9em;
+    }
+
+        .password-requirements li {
+            color: red;
+        }
+
+            .password-requirements li.valid {
+                color: green;
+            }
+
+            .password-requirements li.invalid::before {
+                content: "❌ ";
+            }
+
+            .password-requirements li.valid::before {
+                content: "✅ ";
+            }
+</style>
+
+<div class="container">
+    @if (TempData["MensajeUsu"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["MensajeUsu"]</div>
+    }
+
+    <div class="card">
+        <h2 class="text-center mb-4">Registro de Usuario</h2>
+        <form method="post" action="/Home/RegistrarUsuario">
+            <div class="form-group mb-3">
+                <label for="IdUsuario">Identificación:</label>
+                <input type="text" class="form-control" id="IdUsuario" name="IdUsuario" required minlength="9" maxlength="9" pattern="\d{9}" title="La identificación debe tener exactamente 9 caracteres numéricos.">
+                @if (TempData["MII"] != null)
+                {
+                    <div class="alert alert-success text-center">@TempData["MII"]</div>
+                }
+                <div class="invalid-feedback">La identificación debe tener exactamente 9 caracteres numéricos.</div>
+
+            </div>
+            <div class="form-group mb-3">
+                <label for="NombreUsuario">Nombre:</label>
+                <input type="text" class="form-control" id="NombreUsuario" name="NombreUsuario" required>
+                @if (TempData["MUI"] != null)
+                {
+                    <div class="alert alert-success text-center">@TempData["MUI"]</div>
+                }
+
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Direccion">Correo Electrónico:</label>
+                <input type="email" class="form-control" id="Direccion" name="Direccion" required>
+            </div>
+
+
+            <div class="security-question-container">
+                <label for="pregunta1">Pregunta de seguridad 1:</label>
+                <select name="Pregunta1" class="security-question" required>
+                    <option value="">Seleccione una pregunta</option>
+                    <option value="¿Cuál es el nombre de tu primera mascota?">¿Cuál es el nombre de tu primera mascota?</option>
+                    <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
+                    <option value="¿Cuál fue tu escuela primaria?">¿Cuál fue tu escuela primaria?</option>
+                </select>
+                <input type="text" name="Respuesta1" class="security-answer" required placeholder="Respuesta">
+            </div>
+
+            <div class="security-question-container">
+                <label for="pregunta2">Pregunta de seguridad 2:</label>
+                <select name="Pregunta2" class="security-question" required>
+                    <option value="">Seleccione una pregunta</option>
+                    <option value="¿Cuál es el nombre de tu mejor amigo?">¿Cuál es el nombre de tu mejor amigo?</option>
+                    <option value="¿Cuál fue tu primer trabajo?">¿Cuál fue tu primer trabajo?</option>
+                    <option value="¿Cuál es tu color favorito?">¿Cuál es tu color favorito?</option>
+                </select>
+                <input type="text" name="Respuesta2" class="security-answer" required placeholder="Respuesta">
+            </div>
+
+            <div class="security-question-container">
+                <label for="pregunta3">Pregunta de seguridad 3:</label>
+                <select name="Pregunta3" class="security-question" required>
+                    <option value="">Seleccione una pregunta</option>
+                    <option value="¿Cuál es tu película favorita?">¿Cuál es tu película favorita?</option>
+                    <option value="¿Cuál fue tu primer auto?">¿Cuál fue tu primer auto?</option>
+                    <option value="¿Cuantas mascotas has tenido?">¿Cuantas mascotas has tenido?</option>
+                </select>
+                <input type="text" name="Respuesta3" class="security-answer" required placeholder="Respuesta">
+            </div>
+            <select id="provincia" name="IdProvincia" class="form-control" required>
+                <option value="">Seleccione una provincia</option>
+            </select>
+
+            <select id="canton" name="IdCanton" class="form-control" required disabled>
+                <option value="">Seleccione un cantón</option>
+            </select>
+
+            <select id="distrito" name="IdDistrito" class="form-control" required disabled>
+                <option value="">Seleccione un distrito</option>
+            </select>
+
+
+            <div class="form-group mb-3">
+                <label for="Password">Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" class="form-control" id="Password" name="Password" oninput="validatePassword()" required>
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
+                <ul class="password-requirements">
+                    <li id="length" class="invalid">Al menos 8 caracteres</li>
+                    <li id="length-max" class="invalid">Máximo 15 caracteres</li>
+                    <li id="uppercase" class="invalid">Una letra mayúscula</li>
+                    <li id="lowercase" class="invalid">Una letra minúscula</li>
+                    <li id="number" class="invalid">Un número</li>
+                    <li id="special" class="invalid">Un carácter especial</li>
+
+                </ul>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success">Registrar</button>
+                <button onclick="location.href='/Home/FormInse'" type="button" class="btn btn-danger w-100">Volver</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function validatePassword() {
+        const password = document.getElementById("Password").value;
+
+        document.getElementById("length").classList.toggle("valid", password.length >= 8);
+        document.getElementById("length").classList.toggle("invalid", password.length < 8);
+
+        const lengthMax = document.getElementById("length-max");
+        if (password.length <= 15) {
+            lengthMax.classList.remove("invalid");
+            lengthMax.classList.add("valid");
+        } else {
+            lengthMax.classList.remove("valid");
+            lengthMax.classList.add("invalid");
+        }
+
+
+        document.getElementById("uppercase").classList.toggle("valid", /[A-Z]/.test(password));
+        document.getElementById("uppercase").classList.toggle("invalid", !/[A-Z]/.test(password));
+
+        document.getElementById("lowercase").classList.toggle("valid", /[a-z]/.test(password));
+        document.getElementById("lowercase").classList.toggle("invalid", !/[a-z]/.test(password));
+
+        document.getElementById("number").classList.toggle("valid", /\d/.test(password));
+        document.getElementById("number").classList.toggle("invalid", !/\d/.test(password));
+
+        document.getElementById("special").classList.toggle("valid", /[!#@@$%^&*(),.?":{}|<>]/.test(password));
+        document.getElementById("special").classList.toggle("invalid", !/[!#@@$%^&*(),.?":{}|<>]/.test(password));
+    }
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("Password");
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+
+    function enviarCodigo() {
+        var direccion = document.getElementById("direccion").value;
+        console.log("Función enviarCodigo llamada"); // Mensaje para verificar que la función se llama
+        console.log("Correo ingresado:", direccion); // Verificar que se captura el correo
+        $.ajax({
+            url: '/Home/EnviarCodigoVerificacion',
+            type: 'POST',
+            data: { direccion: direccion },
+            success: function (response) {
+                if (response) {
+                    document.getElementById("mensaje-correo").innerText = "Código enviado al correo.";
+                    document.getElementById("verificacion-codigo").style.display = "block";
+                } else {
+                    document.getElementById("mensaje-correo").innerText = "Error al enviar el código.";
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX:", error);
+                document.getElementById("mensaje-correo").innerText = "Error en la solicitud.";
+            }
+        });
+    }
+
+
+
+    function verificarCodigo() {
+        var codigo = document.getElementById("codigo").value;
+
+        $.ajax({
+            url: '/Home/VerificarCodigo',
+            type: 'POST',
+            data: { codigo: codigo },
+            success: function (response) {
+                if (response) {
+                    document.getElementById("mensaje-codigo").innerText = "Código verificado exitosamente.";
+                    document.getElementById("mensaje-codigo").style.color = "green";
+                    // Habilita el botón de registro aquí o continúa con el flujo de registro
+                } else {
+                    document.getElementById("mensaje-codigo").innerText = "Código incorrecto. Inténtalo de nuevo.";
+                    document.getElementById("mensaje-codigo").style.color = "red";
+                }
+            }
+        });
+    }
+
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Cargar provincias al inicio
+        cargarProvincias();
+
+        // Evento para cambiar la provincia
+        $('#provincia').change(function () {
+            var idProvincia = $(this).val();
+            cargarCantones(idProvincia);
+        });
+
+        // Evento para cambiar el cantón
+        $('#canton').change(function () {
+            var idCanton = $(this).val();
+            cargarDistritos(idCanton);
+        });
+    });
+
+    function cargarProvincias() {
+        $.ajax({
+            url: '/Home/CargarProvincias', // Cambia esto por la URL correcta en tu controlador
+            type: 'GET',
+            success: function (response) {
+                $('#provincia').empty();
+                $('#provincia').append('<option value="">Seleccione una provincia</option>');
+                $.each(response, function (i, provincia) {
+                    $('#provincia').append('<option value="' + provincia.id + '">' + provincia.nombre + '</option>');
+                });
+            }
+        });
+    }
+
+    function cargarCantones(idProvincia) {
+        $.ajax({
+            url: '/Home/CargarCantones', // Cambia esto por la URL correcta en tu controlador
+            type: 'GET',
+            data: { idProvincia: idProvincia },
+            success: function (response) {
+                $('#canton').empty().prop('disabled', false);
+                $('#canton').append('<option value="">Seleccione un cantón</option>');
+                $.each(response, function (i, canton) {
+                    $('#canton').append('<option value="' + canton.id + '">' + canton.nombre + '</option>');
+                });
+            }
+        });
+    }
+
+    function cargarDistritos(idCanton) {
+        $.ajax({
+            url: '/Home/CargarDistritos', // Cambia esto por la URL correcta en tu controlador
+            type: 'GET',
+            data: { idCanton: idCanton },
+            success: function (response) {
+                $('#distrito').empty().prop('disabled', false);
+                $('#distrito').append('<option value="">Seleccione un distrito</option>');
+                $.each(response, function (i, distrito) {
+                    $('#distrito').append('<option value="' + distrito.id + '">' + distrito.nombre + '</option>');
+                });
+            }
+        });
+    }
+    function enviarRegistro(event) {
+        event.preventDefault(); // Evitar el envío normal del formulario
+
+        var direccion = document.getElementById("Direccion").value;
+
+        // Enviar el código de verificación
+        $.ajax({
+            url: '/Home/EnviarCodigoVerificacion', // Cambia esto por la URL correcta en tu controlador
+            type: 'POST',
+            data: { direccion: direccion },
+            success: function (response) {
+                if (response.success) {
+                    document.getElementById("mensaje-correo").innerText = "Código enviado al correo.";
+                    document.getElementById("verificacion-codigo").style.display = "block"; // Muestra el campo para verificar el código
+                } else {
+                    document.getElementById("mensaje-correo").innerText = "Error al enviar el código.";
+                }
+            },
+            error: function () {
+                document.getElementById("mensaje-correo").innerText = "Error en la solicitud.";
+            }
+        });
+    }
+
+    function verificarCodigo() {
+        var codigo = document.getElementById("codigo").value;
+
+        $.ajax({
+            url: '/Home/VerificarCodigo', // Cambia esto por la URL correcta en tu controlador
+            type: 'POST',
+            data: { codigo: codigo },
+            success: function (response) {
+                if (response.success) {
+                    // Código verificado, ahora puedes proceder a registrar el usuario
+                    document.getElementById("registroForm").submit(); // Enviar el formulario
+                } else {
+                    document.getElementById("mensaje-codigo").innerText = "Código incorrecto. Inténtalo de nuevo.";
+                    document.getElementById("mensaje-codigo").style.color = "red";
+                }
+            },
+            error: function () {
+                document.getElementById("mensaje-codigo").innerText = "Error al verificar el código.";
+            }
+        });
+    }
+
+</script>
+
+
+<!-- Bootstrap JS y Popper.js -->
+@Html.Raw("<script src='https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js'></script>")
+@Html.Raw("<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js'></script>")
+<!-- Incluir jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

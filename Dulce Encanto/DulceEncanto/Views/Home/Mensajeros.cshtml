@@ -1,0 +1,57 @@
+﻿@{
+
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+<div class="mensajeros-container">
+    <h2>Mensajeros Disponibles</h2>
+
+    @if (Model.Count == 0)
+    {
+        <p class="text-center">No hay mensajeros disponibles en este momento.</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var mensajero in Model)
+                {
+                    <tr>
+                        <td>@mensajero.Nombre</td>
+                        <td>@mensajero.Telefono</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+</div>
+
+<style>
+    .mensajeros-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #faf5ff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
